@@ -37,6 +37,11 @@ int FindBiggestContour(vector<vector<Point>> pts)
     return index;
 }
 
+void transfer_data(int input)
+{
+
+}
+
 void draw_center(Mat &frame)
 {
     for (auto i = 0; i < center_point.size(); i++)
@@ -52,13 +57,14 @@ void draw_center(Mat &frame)
     center_point.pop_back();
 }
 
+
 int check_fall_count(int fall_count)
 {
     if (fall_count > 10)
     {
         return 3;
     }
-    else if(fall_count <= 10 && fall_count >0)
+    else if(fall_count <= 10 && fall_count > 0)
     {
         return 2;
     }
@@ -130,6 +136,7 @@ void falldowndetector_img(Ptr<BackgroundSubtractorMOG2> mog2, Mat& frame, Mat& f
             ellip_aspectratio = ellip.size.height / ellip.size.width;
             ellip_angle = (ellip.angle > 90) ? 180 - ellip.angle : ellip.angle;
 
+            /*
             if (center_point.size() <= 5)
             {
                 center_point.push_back(ellip.center);
@@ -138,8 +145,9 @@ void falldowndetector_img(Ptr<BackgroundSubtractorMOG2> mog2, Mat& frame, Mat& f
             {
                 draw_center(frame);
             }
+            */
 
-            if (ellip.size.height > ellip.size.width && ellip_angle < 30)
+            if (ellip.size.height > ellip.size.width && ellip_angle < 30)//
             {
                 if ((fall_count - 1) >= 0)
                 {
@@ -183,10 +191,24 @@ void falldowndetector_img(Ptr<BackgroundSubtractorMOG2> mog2, Mat& frame, Mat& f
         {
             motion_count++;
         }
-
     }
-    //cout << "image" << count << ":" << motion_count / contours[bg_index].size() << endl;
-    cout << fall_count << endl;
+    int mrow_size = motion.rows;
+    int mcol_size = motion.cols;
+    int all_motion = 0;
+    for (int i = 0; i < mrow_size; i++)
+    {
+        for (int j = 0; j < mcol_size; j++)
+        {
+            if (motion.at<Vec3b>(i, j)[1] != 0)
+            {
+                all_motion++;
+            }
+        }
+    }
+    //cout << motion_count << endl;
+    //cout << all_motion << endl;
+    //cout << "image" << count << ":" << double(motion_count / all_motion) << endl;
+    //cout << fall_count << endl;
     // write infromation on the source image
     cv::rectangle(frame, Point(10, 2), Point(100, 20), Scalar(255, 255, 255), -1);
     cv::putText(frame, to_string(count), cv::Point(15, 15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 0)); 
